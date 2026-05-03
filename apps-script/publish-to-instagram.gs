@@ -11,8 +11,8 @@
  */
 
 // ── CONFIG ──────────────────────────────────────────────────────────────────
-const AIRTABLE_BASE   = 'appeqyvYmqKgXeOSW';
-const TABLE_FOTOS     = 'tbliFstlSbfAOYLg0';
+// AIRTABLE_BASE y AIRTABLE_TABLE_FOTOS ya declarados en sync-drive-to-airtable.gs
+const TABLE_FOTOS     = 'tbliFstlSbfAOYLg0';  // mismo valor que AIRTABLE_TABLE_FOTOS, alias local
 const TABLE_POSTS     = 'tblYWMeWVwFwWhHpo';
 const TABLE_USOS      = 'tblLBjfaGBFz7uQWT';
 const IG_API_BASE     = 'https://graph.instagram.com/v22.0';
