@@ -380,8 +380,8 @@ function renderPending() {
     c.innerHTML = `
       <div class="empty">
         <h3>No hay carrusel pendiente</h3>
-        <p>El escenario 1 corre automáticamente cada día. Si quieres uno ahora mismo, abre Make.com y haz click en "Run once".</p>
-        <a class="btn btn-primary" href="https://us2.make.com/${MAKE_TEAM_ID || '2236659'}/scenarios/${MAKE_SCENARIO_1}/edit" target="_blank">⚡ Abrir escenario en Make.com</a>
+        <p>El escenario 1 corre automáticamente cada día. Si quieres uno ahora mismo, click abajo:</p>
+        <button class="btn btn-primary" onclick="triggerNew()">⚡ Generar carrusel ahora</button>
         <button class="btn btn-ghost btn-sm" style="margin-top:12px;display:block;margin-left:auto;margin-right:auto" onclick="loadPending()">🔄 Refrescar</button>
       </div>`;
     return;
@@ -546,22 +546,24 @@ async function action(act) {
   }
 }
 
-// ========== RUN SCENARIO 1 ==========
-async function runScenario1() {
-  toast('Disparando escenario 1...', '');
+// ========== TRIGGER NEW (via webhook) ==========
+async function triggerNew() {
+  toast('Disparando escenario 1... espera ~30 segundos', '');
   try {
-    const r = await fetch(`https://us2.make.com/api/v2/scenarios/${MAKE_SCENARIO_1}/run`, {
-      method: 'POST',
-      headers: { 'Authorization': `Token ${MAKE_API_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({})
-    });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    setTimeout(async () => {
+    await fetch(`${WEBHOOK_URL}?action=trigger_new`, { method: 'GET', mode: 'no-cors' });
+    // Poll for the new pending post — escenario 1 toma ~25s en correr completo
+    let attempts = 0;
+    const poll = setInterval(async () => {
+      attempts++;
       await loadPending();
-      toast('Carrusel generado', 'success');
-    }, 8000);
+      if (state.pendingPost || attempts >= 12) {
+        clearInterval(poll);
+        if (state.pendingPost) toast('✓ Carrusel generado', 'success');
+        else toast('Tardó más de 60s. Refresca manualmente.', 'error');
+      }
+    }, 5000);
   } catch (e) {
-    toast('Error: ' + e.message + '. Corre manualmente desde Make.com.', 'error');
+    toast('Error: ' + e.message, 'error');
   }
 }
 
