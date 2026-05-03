@@ -409,8 +409,8 @@ function renderPending() {
     c.innerHTML = `
       <div class="empty">
         <h3>No hay carrusel pendiente</h3>
-        <p>El escenario 1 corre automáticamente cada día. Si quieres uno ahora mismo, click abajo:</p>
-        <button class="btn btn-primary" onclick="triggerNew()">⚡ Generar carrusel ahora</button>
+        <p>El escenario 1 corre automáticamente cada día. Si quieres uno ahora, abre Make.com y haz click en "Run once".</p>
+        <a class="btn btn-primary" href="https://us2.make.com/${MAKE_TEAM_ID}/scenarios/${MAKE_SCENARIO_1}/edit" target="_blank">⚡ Abrir Make.com (Run once)</a>
         <button class="btn btn-ghost btn-sm" style="margin-top:12px;display:block;margin-left:auto;margin-right:auto" onclick="loadPending()">🔄 Refrescar</button>
       </div>`;
     return;
