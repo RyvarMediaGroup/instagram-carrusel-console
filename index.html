@@ -102,6 +102,14 @@ label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bot
 .slide-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--muted)}
 .slide-add{aspect-ratio:1;border:2px dashed var(--border);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:32px;transition:all .15s}
 .slide-add:hover{border-color:var(--accent);color:var(--accent)}
+.slide-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;pointer-events:none;backdrop-filter:blur(4px);transition:all .15s}
+.slide:hover .slide-play{background:var(--accent);transform:translate(-50%,-50%) scale(1.15)}
+
+/* ── PREVIEW MODAL ── */
+#preview-modal .modal-card{width:auto;max-width:90vw;max-height:90vh;padding:0;background:#000}
+#preview-modal .preview-media{display:block;max-width:90vw;max-height:80vh}
+#preview-modal iframe{width:80vw;height:80vh;border:none;background:#000;max-width:1000px;max-height:600px}
+.preview-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;border:none;cursor:pointer;font-size:18px;z-index:60}
 
 /* ── ACTIONS ── */
 .actions{display:flex;gap:10px;flex-wrap:wrap;padding-top:18px;border-top:1px solid var(--border);margin-top:18px}
@@ -217,6 +225,12 @@ label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bot
       <div id="config-content"><div class="loading-screen"><span class="loader"></span></div></div>
     </div>
   </div>
+</div>
+
+<!-- PREVIEW MODAL (image/video) -->
+<div class="modal" id="preview-modal" onclick="if(event.target.id==='preview-modal')closePreview()">
+  <button class="preview-close" onclick="closePreview()">✕</button>
+  <div class="modal-card glass" id="preview-content"></div>
 </div>
 
 <!-- PHOTO PICKER MODAL -->
@@ -456,10 +470,11 @@ function renderSlide(fotoId, idx) {
   }
   const thumb = getThumbUrl(foto);
   const tipo = foto.fields.Tipo || 'Foto';
-  return `<div class="slide" data-id="${fotoId}">
+  return `<div class="slide" data-id="${fotoId}" onclick="if(!event.target.classList.contains('slide-x'))openPreview('${fotoId}')">
     <span class="slide-num">${idx + 1}</span>
-    <button class="slide-x" onclick="removeSlide('${fotoId}')">×</button>
+    <button class="slide-x" onclick="event.stopPropagation();removeSlide('${fotoId}')">×</button>
     ${thumb ? `<img class="slide-img" src="${thumb}" alt="${foto.fields.Nombre || ''}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="slide-placeholder" style="display:none">${tipo === 'Video' ? '🎬' : '🖼️'}</div>` : `<div class="slide-placeholder">${tipo === 'Video' ? '🎬' : '🖼️'}</div>`}
+    ${tipo === 'Video' ? `<div class="slide-play">▶</div>` : ''}
     <div class="slide-name">${foto.fields.Nombre || ''}</div>
   </div>`;
 }
@@ -503,6 +518,34 @@ async function saveCaption() {
   toast('Caption guardado', 'success');
 }
 
+// ========== PREVIEW MODAL ==========
+function openPreview(fotoId) {
+  const foto = fotoById(fotoId);
+  if (!foto) return;
+  const tipo = foto.fields.Tipo || 'Foto';
+  const driveUrl = foto.fields['URL Drive'] || '';
+  const m = driveUrl.match(/\/file\/d\/([^/]+)/) || driveUrl.match(/[?&]id=([^&]+)/);
+  const fileId = m ? m[1] : null;
+  const att = foto.fields.Attachments?.[0];
+  const fullImg = att?.url;
+
+  const c = document.getElementById('preview-content');
+  if (tipo === 'Video' && fileId) {
+    c.innerHTML = `<iframe src="https://drive.google.com/file/d/${fileId}/preview?autoplay=1" allow="autoplay" allowfullscreen></iframe>`;
+  } else if (fullImg) {
+    c.innerHTML = `<img class="preview-media" src="${fullImg}" alt="${foto.fields.Nombre || ''}">`;
+  } else if (fileId) {
+    c.innerHTML = `<img class="preview-media" src="https://lh3.googleusercontent.com/d/${fileId}=w1200" alt="${foto.fields.Nombre || ''}">`;
+  } else {
+    c.innerHTML = `<div style="padding:40px;color:#fff">Vista previa no disponible</div>`;
+  }
+  document.getElementById('preview-modal').classList.add('visible');
+}
+function closePreview() {
+  document.getElementById('preview-modal').classList.remove('visible');
+  document.getElementById('preview-content').innerHTML = '';  // stop video playback
+}
+
 // ========== ADD PHOTO PICKER ==========
 function openPicker() {
   const modal = document.getElementById('picker-modal');
@@ -519,6 +562,7 @@ function openPicker() {
       return `<div class="picker-item" onclick="addSlide('${f.id}')">
         <span class="picker-tipo">${tipo}</span>
         ${thumb ? `<img class="picker-img" src="${thumb}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="slide-placeholder" style="display:none">${tipo === 'Video' ? '🎬' : '🖼️'}</div>` : `<div class="slide-placeholder">${tipo === 'Video' ? '🎬' : '🖼️'}</div>`}
+        ${tipo === 'Video' ? `<div class="slide-play">▶</div>` : ''}
         <div class="picker-info">${f.fields.Nombre || ''}</div>
       </div>`;
     }).join('')}</div>`;
