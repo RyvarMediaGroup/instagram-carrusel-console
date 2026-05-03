@@ -374,6 +374,21 @@ function fotoById(id) {
   return state.fotos.find(f => f.id === id);
 }
 
+function getThumbUrl(foto) {
+  // 1. Try Airtable native Attachments
+  const att = foto.fields.Attachments?.[0];
+  if (att) {
+    return att?.thumbnails?.large?.url || att?.thumbnails?.full?.url || att?.url;
+  }
+  // 2. Try Google Drive URL — extract file ID and use Drive thumbnail endpoint
+  const driveUrl = foto.fields['URL Drive'];
+  if (driveUrl) {
+    const m = driveUrl.match(/\/file\/d\/([^/]+)/) || driveUrl.match(/[?&]id=([^&]+)/);
+    if (m) return `https://lh3.googleusercontent.com/d/${m[1]}=w400`;
+  }
+  return null;
+}
+
 function renderPending() {
   const c = document.getElementById('pending-content');
   if (!state.pendingPost) {
@@ -439,13 +454,12 @@ function renderSlide(fotoId, idx) {
       <div class="slide-name">⚠️ Foto no encontrada</div>
     </div>`;
   }
-  const att = foto.fields.Attachments?.[0];
-  const thumb = att?.thumbnails?.large?.url || att?.url;
+  const thumb = getThumbUrl(foto);
   const tipo = foto.fields.Tipo || 'Foto';
   return `<div class="slide" data-id="${fotoId}">
     <span class="slide-num">${idx + 1}</span>
     <button class="slide-x" onclick="removeSlide('${fotoId}')">×</button>
-    ${thumb ? `<img class="slide-img" src="${thumb}" alt="${foto.fields.Nombre || ''}">` : `<div class="slide-placeholder">${tipo === 'Video' ? '🎬' : '🖼️'}</div>`}
+    ${thumb ? `<img class="slide-img" src="${thumb}" alt="${foto.fields.Nombre || ''}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="slide-placeholder" style="display:none">${tipo === 'Video' ? '🎬' : '🖼️'}</div>` : `<div class="slide-placeholder">${tipo === 'Video' ? '🎬' : '🖼️'}</div>`}
     <div class="slide-name">${foto.fields.Nombre || ''}</div>
   </div>`;
 }
@@ -500,12 +514,11 @@ function openPicker() {
     c.innerHTML = `<div class="empty"><h3>Sin fotos disponibles</h3><p>Todas las fotos del pool ya están en el carrusel.</p></div>`;
   } else {
     c.innerHTML = `<div class="picker-grid">${available.map(f => {
-      const att = f.fields.Attachments?.[0];
-      const thumb = att?.thumbnails?.large?.url || att?.url;
+      const thumb = getThumbUrl(f);
       const tipo = f.fields.Tipo || 'Foto';
       return `<div class="picker-item" onclick="addSlide('${f.id}')">
         <span class="picker-tipo">${tipo}</span>
-        ${thumb ? `<img class="picker-img" src="${thumb}">` : `<div class="slide-placeholder">${tipo === 'Video' ? '🎬' : '🖼️'}</div>`}
+        ${thumb ? `<img class="picker-img" src="${thumb}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="slide-placeholder" style="display:none">${tipo === 'Video' ? '🎬' : '🖼️'}</div>` : `<div class="slide-placeholder">${tipo === 'Video' ? '🎬' : '🖼️'}</div>`}
         <div class="picker-info">${f.fields.Nombre || ''}</div>
       </div>`;
     }).join('')}</div>`;
