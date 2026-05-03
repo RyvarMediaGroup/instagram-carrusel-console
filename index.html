@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ryvar — Carrusel Instagram</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<style>
+:root {
+  --bg:        #0a0a0a;
+  --surface:   rgba(255,255,255,0.05);
+  --surface-2: rgba(255,255,255,0.08);
+  --border:    rgba(255,255,255,0.1);
+  --accent:    #7C3AED;
+  --accent-l:  #A855F7;
+  --grad:      linear-gradient(135deg,#7C3AED,#A855F7);
+  --green:     #22C55E;
+  --red:       #EF4444;
+  --blue:      #3B82F6;
+  --yellow:    #EAB308;
+  --text:      #F1F5F9;
+  --muted:     #64748B;
+  --r:         14px;
+  --r-sm:      8px;
+  --font:      'Plus Jakarta Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.6;min-height:100vh}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(124,58,237,.4);border-radius:3px}
+
+/* ── REUSABLE ── */
+.glass{background:var(--surface);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--r)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border:none;border-radius:var(--r-sm);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;text-decoration:none}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.35)}
+.btn-primary:hover{transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--text)}
+.btn-ghost:hover{background:var(--surface-2)}
+.btn-green{background:#15803D;color:#fff}
+.btn-green:hover{background:#166534}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-blue:hover{background:#2563eb}
+.btn-red{background:#DC2626;color:#fff}
+.btn-red:hover{background:#B91C1C}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-icon{width:32px;height:32px;padding:0;background:var(--surface);border:1px solid var(--border);color:var(--muted);border-radius:var(--r-sm)}
+.btn-icon:hover{color:var(--text);background:var(--surface-2)}
+
+input,select,textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:var(--font);font-size:13px;padding:9px 12px;outline:none;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,.15)}
+textarea{resize:vertical;min-height:140px;line-height:1.6}
+label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+
+/* ── LOGIN ── */
+#login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100}
+#login.hidden{display:none}
+.login-card{width:380px;max-width:95vw;padding:44px 40px}
+.login-logo{font-size:24px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:4px}
+.login-sub{color:var(--muted);font-size:12px;margin-bottom:32px;letter-spacing:.3px;text-align:center}
+#login input{font-size:22px;text-align:center;letter-spacing:8px;padding:14px}
+#login-error{color:var(--red);font-size:12px;margin:12px 0;min-height:18px;text-align:center}
+
+/* ── APP ── */
+#app{display:none;flex-direction:column;min-height:100vh}
+#app.visible{display:flex}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.5);backdrop-filter:blur(8px);position:sticky;top:0;z-index:10}
+.topbar-logo{font-size:18px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.topbar-tabs{display:flex;gap:4px}
+.tab{padding:8px 16px;border-radius:var(--r-sm);background:transparent;border:none;color:var(--muted);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.tab:hover{color:var(--text);background:var(--surface)}
+.tab.active{color:var(--text);background:var(--surface-2)}
+
+/* ── MAIN ── */
+.main{flex:1;padding:32px;max-width:1200px;margin:0 auto;width:100%}
+.section{display:none}
+.section.active{display:block}
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty h3{font-size:18px;margin-bottom:8px;color:var(--text)}
+.empty p{font-size:13px;max-width:400px;margin:0 auto 20px}
+
+/* ── CARD ── */
+.card{padding:24px;margin-bottom:20px}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:12px}
+.card-title{font-size:16px;font-weight:700}
+.card-meta{color:var(--muted);font-size:12px}
+
+/* ── SLIDES GRID ── */
+.slides{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;margin-bottom:18px}
+.slide{position:relative;aspect-ratio:1;border-radius:var(--r-sm);overflow:hidden;background:var(--surface-2);border:1px solid var(--border);cursor:grab;transition:transform .15s}
+.slide:hover{transform:translateY(-2px);border-color:var(--accent)}
+.slide.dragging{opacity:.5;cursor:grabbing}
+.slide-num{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.7);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;z-index:2}
+.slide-name{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.85),transparent);color:#fff;padding:12px 8px 8px;font-size:11px;font-weight:500;line-height:1.3}
+.slide-x{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:rgba(239,68,68,.9);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;font-weight:700;border:none;z-index:2;opacity:0;transition:opacity .15s}
+.slide:hover .slide-x{opacity:1}
+.slide-img{width:100%;height:100%;object-fit:cover;display:block}
+.slide-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--muted)}
+.slide-add{aspect-ratio:1;border:2px dashed var(--border);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:32px;transition:all .15s}
+.slide-add:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── ACTIONS ── */
+.actions{display:flex;gap:10px;flex-wrap:wrap;padding-top:18px;border-top:1px solid var(--border);margin-top:18px}
+
+/* ── HISTORY ── */
+.history-item{display:grid;grid-template-columns:auto 1fr auto;gap:18px;padding:18px;border-bottom:1px solid var(--border);align-items:center}
+.history-item:last-child{border-bottom:none}
+.history-date{font-size:12px;color:var(--muted);min-width:80px}
+.history-caption{font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.history-state{padding:4px 10px;border-radius:10px;font-size:11px;font-weight:600;text-transform:uppercase}
+.state-borrador{background:rgba(234,179,8,.15);color:var(--yellow)}
+.state-aprobado{background:rgba(59,130,246,.15);color:var(--blue)}
+.state-publicado{background:rgba(34,197,94,.15);color:var(--green)}
+.state-rechazado{background:rgba(239,68,68,.15);color:var(--red)}
+
+/* ── CONFIG ── */
+.config-item{padding:18px;margin-bottom:14px}
+.config-item label{margin-bottom:8px}
+.config-key{font-family:'SF Mono',monospace;font-size:13px;color:var(--accent-l);font-weight:700;margin-bottom:4px}
+.config-desc{color:var(--muted);font-size:12px;margin-bottom:12px}
+
+/* ── PICKER MODAL ── */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:50;display:none;align-items:center;justify-content:center;padding:32px}
+.modal.visible{display:flex}
+.modal-card{width:900px;max-width:100%;max-height:80vh;display:flex;flex-direction:column;padding:0}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-body{padding:20px 24px;overflow-y:auto}
+.picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.picker-item{aspect-ratio:1;border-radius:var(--r-sm);overflow:hidden;cursor:pointer;border:2px solid transparent;position:relative;background:var(--surface-2);transition:all .15s}
+.picker-item:hover{border-color:var(--accent);transform:translateY(-2px)}
+.picker-item.disabled{opacity:.3;cursor:not-allowed}
+.picker-img{width:100%;height:100%;object-fit:cover}
+.picker-info{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.9),transparent);color:#fff;padding:12px 8px 8px;font-size:11px}
+.picker-tipo{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.7);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;text-transform:uppercase}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;right:24px;padding:14px 20px;border-radius:var(--r-sm);background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.4);transform:translateY(100px);transition:transform .25s;z-index:200;border-left:4px solid var(--accent)}
+#toast.show{transform:translateY(0)}
+#toast.success{border-color:var(--green)}
+#toast.error{border-color:var(--red)}
+
+/* ── LOADER ── */
+.loader{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-screen{padding:80px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<!-- SETUP (first-time) -->
+<div id="setup" style="display:none;position:fixed;inset:0;background:var(--bg);align-items:center;justify-content:center;z-index:101;padding:20px">
+  <div class="login-card glass" style="width:480px">
+    <div class="login-logo">SETUP</div>
+    <div class="login-sub">Configuración inicial — solo se guarda en este navegador</div>
+    <div class="field" style="margin-bottom:14px">
+      <label>PIN (4-6 dígitos, lo eliges tú)</label>
+      <input type="password" id="setup-pin" placeholder="••••" maxlength="6">
+    </div>
+    <div class="field" style="margin-bottom:14px">
+      <label>Airtable Personal Access Token</label>
+      <input type="password" id="setup-airtable" placeholder="patXXXXXXXXXXXXXX...">
+    </div>
+    <div class="field" style="margin-bottom:14px">
+      <label>Make.com Webhook URL</label>
+      <input type="text" id="setup-webhook" placeholder="https://hook.us2.make.com/...">
+    </div>
+    <div class="field" style="margin-bottom:18px">
+      <label>Make.com API Token (opcional, para "Generar carrusel")</label>
+      <input type="password" id="setup-make" placeholder="UUID...">
+    </div>
+    <div id="setup-error" style="color:var(--red);font-size:12px;margin-bottom:12px;min-height:18px"></div>
+    <button class="btn btn-primary" style="width:100%" onclick="saveSetup()">Guardar y entrar</button>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="login-card glass">
+    <div class="login-logo">RYVAR</div>
+    <div class="login-sub">Carrusel Instagram</div>
+    <input type="password" id="pin-input" placeholder="••••" maxlength="6" autocomplete="off">
+    <div id="login-error"></div>
+    <button class="btn btn-primary" style="width:100%" onclick="checkPin()">Entrar</button>
+    <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px" onclick="resetSetup()">Re-configurar</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">RYVAR · Carrusel</div>
+    <div class="topbar-tabs">
+      <button class="tab active" data-section="pending" onclick="showSection('pending')">📋 Pendiente</button>
+      <button class="tab" data-section="history" onclick="showSection('history')">📜 Historial</button>
+      <button class="tab" data-section="config" onclick="showSection('config')">⚙️ Config</button>
+    </div>
+    <button class="btn btn-icon" onclick="logout()" title="Salir">⏻</button>
+  </div>
+
+  <div class="main">
+    <!-- PENDING SECTION -->
+    <div class="section active" id="section-pending">
+      <div id="pending-content"><div class="loading-screen"><span class="loader"></span></div></div>
+    </div>
+
+    <!-- HISTORY SECTION -->
+    <div class="section" id="section-history">
+      <div id="history-content"><div class="loading-screen"><span class="loader"></span></div></div>
+    </div>
+
+    <!-- CONFIG SECTION -->
+    <div class="section" id="section-config">
+      <div id="config-content"><div class="loading-screen"><span class="loader"></span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PHOTO PICKER MODAL -->
+<div class="modal" id="picker-modal">
+  <div class="modal-card glass">
+    <div class="modal-head">
+      <div class="card-title">Añadir foto/video al carrusel</div>
+      <button class="btn btn-icon" onclick="closePicker()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="picker-content"><div class="loading-screen"><span class="loader"></span></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ========== CONFIG ==========
+// Public IDs (safe to commit)
+const AIRTABLE_BASE = 'appeqyvYmqKgXeOSW';
+const TABLE_FOTOS = 'tbliFstlSbfAOYLg0';
+const TABLE_POSTS = 'tblYWMeWVwFwWhHpo';
+const TABLE_CONFIG = 'tblyMDYpvhlIhyLWp';
+const MAKE_SCENARIO_1 = 4939714;
+
+// Secrets — stored in localStorage on first visit, never in this file
+const PIN = localStorage.getItem('ryvar_pin') || '';
+const AIRTABLE_TOKEN = localStorage.getItem('ryvar_airtable_token') || '';
+const WEBHOOK_URL = localStorage.getItem('ryvar_webhook_url') || '';
+const MAKE_API_TOKEN = localStorage.getItem('ryvar_make_token') || '';
+
+// ========== STATE ==========
+let state = {
+  pendingPost: null,
+  fotos: [],
+  history: [],
+  config: []
+};
+
+// ========== AIRTABLE HELPERS ==========
+async function airtable(method, table, query = '', body = null, recordId = '') {
+  const url = `https://api.airtable.com/v0/${AIRTABLE_BASE}/${table}${recordId ? '/' + recordId : ''}${query}`;
+  const opts = {
+    method,
+    headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` }
+  };
+  if (body) {
+    opts.headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(body);
+  }
+  const r = await fetch(url, opts);
+  if (!r.ok) throw new Error(`Airtable ${method} failed: ${r.status}`);
+  return method === 'DELETE' ? { deleted: true } : r.json();
+}
+
+// ========== SETUP / AUTH ==========
+function needsSetup() {
+  return !PIN || !AIRTABLE_TOKEN || !WEBHOOK_URL;
+}
+
+function saveSetup() {
+  const pin = document.getElementById('setup-pin').value.trim();
+  const at = document.getElementById('setup-airtable').value.trim();
+  const wh = document.getElementById('setup-webhook').value.trim();
+  const mk = document.getElementById('setup-make').value.trim();
+  const err = document.getElementById('setup-error');
+  if (!pin || pin.length < 4) { err.textContent = 'PIN inválido'; return; }
+  if (!at.startsWith('pat')) { err.textContent = 'Airtable token inválido (debe empezar con "pat")'; return; }
+  if (!wh.startsWith('https://hook.')) { err.textContent = 'Webhook URL inválida'; return; }
+  localStorage.setItem('ryvar_pin', pin);
+  localStorage.setItem('ryvar_airtable_token', at);
+  localStorage.setItem('ryvar_webhook_url', wh);
+  if (mk) localStorage.setItem('ryvar_make_token', mk);
+  location.reload();
+}
+
+function resetSetup() {
+  if (!confirm('¿Borrar configuración y volver a configurar?')) return;
+  localStorage.clear();
+  sessionStorage.clear();
+  location.reload();
+}
+
+function checkPin() {
+  const input = document.getElementById('pin-input').value;
+  const err = document.getElementById('login-error');
+  if (input === PIN) {
+    sessionStorage.setItem('ryvar_carrusel_auth', '1');
+    document.getElementById('login').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+    init();
+  } else {
+    err.textContent = 'PIN incorrecto';
+    document.getElementById('pin-input').value = '';
+  }
+}
+function logout() {
+  sessionStorage.removeItem('ryvar_carrusel_auth');
+  location.reload();
+}
+
+// Boot
+if (needsSetup()) {
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('setup').style.display = 'flex';
+} else {
+  document.getElementById('pin-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkPin();
+  });
+  if (sessionStorage.getItem('ryvar_carrusel_auth') === '1') {
+    document.getElementById('login').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+    init();
+  }
+}
+
+// ========== INIT ==========
+async function init() {
+  await Promise.all([loadPending(), loadFotos()]);
+}
+
+// ========== TABS ==========
+function showSection(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab[data-section="${name}"]`).classList.add('active');
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(`section-${name}`).classList.add('active');
+  if (name === 'history') loadHistory();
+  if (name === 'config') loadConfig();
+}
+
+// ========== PENDING ==========
+async function loadPending() {
+  try {
+    const filter = `?filterByFormula=${encodeURIComponent("OR({Estado}='Borrador',{Estado}='Pendiente Aprobación')")}&maxRecords=1`;
+    const data = await airtable('GET', TABLE_POSTS, filter);
+    state.pendingPost = data.records[0] || null;
+    renderPending();
+  } catch (e) {
+    document.getElementById('pending-content').innerHTML = `<div class="empty"><h3>Error</h3><p>${e.message}</p></div>`;
+  }
+}
+
+async function loadFotos() {
+  try {
+    const filter = `?filterByFormula=${encodeURIComponent("{Estado}='Activa'")}&maxRecords=200`;
+    const data = await airtable('GET', TABLE_FOTOS, filter);
+    state.fotos = data.records;
+  } catch (e) { console.error(e); }
+}
+
+function fotoById(id) {
+  return state.fotos.find(f => f.id === id);
+}
+
+function renderPending() {
+  const c = document.getElementById('pending-content');
+  if (!state.pendingPost) {
+    c.innerHTML = `
+      <div class="empty">
+        <h3>No hay carrusel pendiente</h3>
+        <p>Genera un carrusel nuevo desde Make.com (escenario 1) o haz click abajo para correrlo ahora.</p>
+        <button class="btn btn-primary" onclick="runScenario1()">⚡ Generar carrusel ahora</button>
+      </div>`;
+    return;
+  }
+
+  const post = state.pendingPost;
+  const fields = post.fields;
+  const fotoIds = (fields['Fotos IDs'] || '').split(',').filter(Boolean);
+
+  c.innerHTML = `
+    <div class="card glass">
+      <div class="card-head">
+        <div>
+          <div class="card-title">${fields['Título'] || 'Sin título'}</div>
+          <div class="card-meta">${fotoIds.length} slides · Estado: ${fields['Estado']}</div>
+        </div>
+        <span class="history-state state-${(fields['Estado'] || '').toLowerCase().replace(/\s/g, '')}">${fields['Estado']}</span>
+      </div>
+
+      <label>Caption</label>
+      <textarea id="caption-edit" oninput="captionDirty=true">${fields['Caption'] || ''}</textarea>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button class="btn btn-ghost btn-sm" onclick="saveCaption()">💾 Guardar caption editado</button>
+        <button class="btn btn-blue btn-sm" onclick="action('regenerate_caption')">🔄 Regenerar con Claude</button>
+      </div>
+
+      <h3 style="margin:24px 0 12px;font-size:14px;font-weight:700">Slides del carrusel</h3>
+      <div class="slides" id="slides-grid">
+        ${fotoIds.map((id, i) => renderSlide(id, i)).join('')}
+        <div class="slide-add" onclick="openPicker()">+</div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-green" onclick="action('approve')">✅ Aprobar y publicar</button>
+        <button class="btn btn-red" onclick="action('reject')">❌ Rechazar</button>
+      </div>
+    </div>`;
+
+  // Initialize drag-drop
+  const grid = document.getElementById('slides-grid');
+  Sortable.create(grid, {
+    animation: 150,
+    filter: '.slide-add',
+    onEnd: saveSlideOrder
+  });
+}
+
+function renderSlide(fotoId, idx) {
+  const foto = fotoById(fotoId);
+  if (!foto) {
+    return `<div class="slide" data-id="${fotoId}">
+      <span class="slide-num">${idx + 1}</span>
+      <button class="slide-x" onclick="removeSlide('${fotoId}')">×</button>
+      <div class="slide-placeholder">?</div>
+      <div class="slide-name">⚠️ Foto no encontrada</div>
+    </div>`;
+  }
+  const att = foto.fields.Attachments?.[0];
+  const thumb = att?.thumbnails?.large?.url || att?.url;
+  const tipo = foto.fields.Tipo || 'Foto';
+  return `<div class="slide" data-id="${fotoId}">
+    <span class="slide-num">${idx + 1}</span>
+    <button class="slide-x" onclick="removeSlide('${fotoId}')">×</button>
+    ${thumb ? `<img class="slide-img" src="${thumb}" alt="${foto.fields.Nombre || ''}">` : `<div class="slide-placeholder">${tipo === 'Video' ? '🎬' : '🖼️'}</div>`}
+    <div class="slide-name">${foto.fields.Nombre || ''}</div>
+  </div>`;
+}
+
+async function saveSlideOrder() {
+  const ids = [...document.querySelectorAll('#slides-grid .slide')].map(s => s.dataset.id);
+  await updatePostFotos(ids);
+  toast('Orden guardado', 'success');
+}
+
+async function removeSlide(fotoId) {
+  if (!confirm('¿Quitar esta foto del carrusel?')) return;
+  const ids = [...document.querySelectorAll('#slides-grid .slide')].map(s => s.dataset.id).filter(id => id !== fotoId);
+  await updatePostFotos(ids);
+  await loadPending();
+  toast('Foto removida', 'success');
+}
+
+async function updatePostFotos(ids) {
+  const post = state.pendingPost;
+  const ordenNombres = ids.map(id => fotoById(id)?.fields?.Nombre || '?').join(' | ');
+  await airtable('PATCH', TABLE_POSTS, '', {
+    fields: {
+      'Fotos IDs': ids.join(','),
+      'Cantidad Slides': ids.length,
+      'Orden Slides': ordenNombres
+    }
+  }, post.id);
+  post.fields['Fotos IDs'] = ids.join(',');
+  post.fields['Cantidad Slides'] = ids.length;
+}
+
+let captionDirty = false;
+async function saveCaption() {
+  const newCaption = document.getElementById('caption-edit').value;
+  await airtable('PATCH', TABLE_POSTS, '', {
+    fields: { 'Caption': newCaption }
+  }, state.pendingPost.id);
+  state.pendingPost.fields['Caption'] = newCaption;
+  captionDirty = false;
+  toast('Caption guardado', 'success');
+}
+
+// ========== ADD PHOTO PICKER ==========
+function openPicker() {
+  const modal = document.getElementById('picker-modal');
+  const c = document.getElementById('picker-content');
+  const currentIds = (state.pendingPost.fields['Fotos IDs'] || '').split(',').filter(Boolean);
+  const available = state.fotos.filter(f => !currentIds.includes(f.id));
+
+  if (available.length === 0) {
+    c.innerHTML = `<div class="empty"><h3>Sin fotos disponibles</h3><p>Todas las fotos del pool ya están en el carrusel.</p></div>`;
+  } else {
+    c.innerHTML = `<div class="picker-grid">${available.map(f => {
+      const att = f.fields.Attachments?.[0];
+      const thumb = att?.thumbnails?.large?.url || att?.url;
+      const tipo = f.fields.Tipo || 'Foto';
+      return `<div class="picker-item" onclick="addSlide('${f.id}')">
+        <span class="picker-tipo">${tipo}</span>
+        ${thumb ? `<img class="picker-img" src="${thumb}">` : `<div class="slide-placeholder">${tipo === 'Video' ? '🎬' : '🖼️'}</div>`}
+        <div class="picker-info">${f.fields.Nombre || ''}</div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+  modal.classList.add('visible');
+}
+function closePicker() {
+  document.getElementById('picker-modal').classList.remove('visible');
+}
+async function addSlide(fotoId) {
+  const ids = [...document.querySelectorAll('#slides-grid .slide')].map(s => s.dataset.id);
+  ids.push(fotoId);
+  await updatePostFotos(ids);
+  closePicker();
+  await loadPending();
+  toast('Foto añadida', 'success');
+}
+
+// ========== ACTIONS (webhook) ==========
+async function action(act) {
+  const messages = {
+    approve: '¿Aprobar este carrusel para publicar?',
+    regenerate_caption: '¿Regenerar el caption con Claude (mismas fotos)?',
+    reject: '¿Rechazar y eliminar este borrador?'
+  };
+  if (!confirm(messages[act])) return;
+
+  const url = `${WEBHOOK_URL}?action=${act}&post_id=${state.pendingPost.id}`;
+  toast('Procesando...', '');
+  try {
+    await fetch(url, { mode: 'no-cors' });  // no-cors because Make.com
+    setTimeout(async () => {
+      await loadPending();
+      toast(act === 'approve' ? '✅ Aprobado' : act === 'reject' ? '❌ Rechazado' : '🔄 Caption regenerado', 'success');
+    }, 2500);
+  } catch (e) {
+    toast('Error: ' + e.message, 'error');
+  }
+}
+
+// ========== RUN SCENARIO 1 ==========
+async function runScenario1() {
+  toast('Disparando escenario 1...', '');
+  try {
+    const r = await fetch(`https://us2.make.com/api/v2/scenarios/${MAKE_SCENARIO_1}/run`, {
+      method: 'POST',
+      headers: { 'Authorization': `Token ${MAKE_API_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    setTimeout(async () => {
+      await loadPending();
+      toast('Carrusel generado', 'success');
+    }, 8000);
+  } catch (e) {
+    toast('Error: ' + e.message + '. Corre manualmente desde Make.com.', 'error');
+  }
+}
+
+// ========== HISTORY ==========
+async function loadHistory() {
+  const c = document.getElementById('history-content');
+  c.innerHTML = '<div class="loading-screen"><span class="loader"></span></div>';
+  try {
+    const filter = `?filterByFormula=${encodeURIComponent("OR({Estado}='Aprobado',{Estado}='Publicado',{Estado}='Rechazado')")}&maxRecords=50&sort%5B0%5D%5Bfield%5D=Título&sort%5B0%5D%5Bdirection%5D=desc`;
+    const data = await airtable('GET', TABLE_POSTS, filter);
+    state.history = data.records;
+    if (data.records.length === 0) {
+      c.innerHTML = `<div class="empty"><h3>Aún no hay historial</h3><p>Los carruseles aprobados, publicados o rechazados aparecerán aquí.</p></div>`;
+      return;
+    }
+    c.innerHTML = `<div class="card glass" style="padding:0">${data.records.map(r => {
+      const f = r.fields;
+      const stateClass = (f['Estado'] || '').toLowerCase().replace(/\s/g, '');
+      return `<div class="history-item">
+        <div class="history-date">${f['Título'] || ''}</div>
+        <div class="history-caption">${(f['Caption'] || '').substring(0, 200)}</div>
+        <span class="history-state state-${stateClass}">${f['Estado']}</span>
+      </div>`;
+    }).join('')}</div>`;
+  } catch (e) {
+    c.innerHTML = `<div class="empty"><h3>Error</h3><p>${e.message}</p></div>`;
+  }
+}
+
+// ========== CONFIG ==========
+async function loadConfig() {
+  const c = document.getElementById('config-content');
+  c.innerHTML = '<div class="loading-screen"><span class="loader"></span></div>';
+  try {
+    const data = await airtable('GET', TABLE_CONFIG, '?maxRecords=50');
+    state.config = data.records;
+    if (data.records.length === 0) {
+      c.innerHTML = `<div class="empty"><h3>CONFIG vacío</h3><p>Agrega rows desde Airtable.</p></div>`;
+      return;
+    }
+    c.innerHTML = data.records.map(r => {
+      const f = r.fields;
+      return `<div class="card glass config-item">
+        <div class="config-key">${f['Clave']}</div>
+        <div class="config-desc">${f['Descripción'] || ''}</div>
+        <textarea id="cfg-${r.id}" rows="6">${f['Valor'] || ''}</textarea>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="saveConfig('${r.id}')">💾 Guardar</button>
+      </div>`;
+    }).join('');
+  } catch (e) {
+    c.innerHTML = `<div class="empty"><h3>Error</h3><p>${e.message}</p></div>`;
+  }
+}
+
+async function saveConfig(recId) {
+  const val = document.getElementById(`cfg-${recId}`).value;
+  await airtable('PATCH', TABLE_CONFIG, '', { fields: { 'Valor': val } }, recId);
+  toast('Config guardado', 'success');
+}
+
+// ========== TOAST ==========
+let toastTimer;
+function toast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = '', 3500);
+}
+</script>
+
+</body>
+</html>
