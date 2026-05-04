@@ -388,6 +388,12 @@ function fotoById(id) {
   return state.fotos.find(f => f.id === id);
 }
 
+function fotoByNombre(nombre) {
+  // Prefiere el record con URL Publica si hay duplicados (huérfanos sin catbox URL)
+  const matches = state.fotos.filter(f => f.fields.Nombre === nombre);
+  return matches.find(f => f.fields['URL Publica']) || matches[0] || null;
+}
+
 function getThumbUrl(foto) {
   // 1. Try Airtable native Attachments
   const att = foto.fields.Attachments?.[0];
@@ -418,7 +424,11 @@ function renderPending() {
 
   const post = state.pendingPost;
   const fields = post.fields;
-  const fotoIds = (fields['Fotos IDs'] || '').split(',').filter(Boolean);
+  // Source of truth: Orden Slides (Nombres separados por " | ").
+  // Fotos IDs ya no es confiable porque Make's IML no soporta map(array; 'id').
+  // Resolvemos cada Nombre a record ID acá.
+  const ordenNombres = (fields['Orden Slides'] || '').split(/\s*\|\s*/).map(s => s.trim()).filter(Boolean);
+  const fotoIds = ordenNombres.map(n => fotoByNombre(n)?.id).filter(Boolean);
 
   c.innerHTML = `
     <div class="card glass">
