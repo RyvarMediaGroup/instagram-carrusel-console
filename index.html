@@ -434,16 +434,23 @@ function fotoByNombre(nombre) {
 }
 
 function getThumbUrl(foto) {
-  // 1. Try Airtable native Attachments
+  const driveUrl = foto.fields['URL Drive'];
+  const tipo = foto.fields.Tipo || 'Foto';
+  if (driveUrl) {
+    const m = driveUrl.match(/\/file\/d\/([^/]+)/) || driveUrl.match(/[?&]id=([^&]+)/);
+    if (m) {
+      // Videos: lh3 con =w-h-c no genera buen thumbnail para video file IDs.
+      // Usamos drive.google.com/thumbnail que sí extrae frame del video.
+      if (tipo === 'Video') {
+        return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w400`;
+      }
+      // Fotos: muestra el crop 4:5 EXACTO que enviaremos a IG.
+      return `https://lh3.googleusercontent.com/d/${m[1]}=w400-h500-c`;
+    }
+  }
   const att = foto.fields.Attachments?.[0];
   if (att) {
     return att?.thumbnails?.large?.url || att?.thumbnails?.full?.url || att?.url;
-  }
-  // 2. Try Google Drive URL — extract file ID and use Drive thumbnail endpoint
-  const driveUrl = foto.fields['URL Drive'];
-  if (driveUrl) {
-    const m = driveUrl.match(/\/file\/d\/([^/]+)/) || driveUrl.match(/[?&]id=([^&]+)/);
-    if (m) return `https://lh3.googleusercontent.com/d/${m[1]}=w400`;
   }
   return null;
 }
@@ -575,16 +582,15 @@ function openPreview(fotoId) {
   const driveUrl = foto.fields['URL Drive'] || '';
   const m = driveUrl.match(/\/file\/d\/([^/]+)/) || driveUrl.match(/[?&]id=([^&]+)/);
   const fileId = m ? m[1] : null;
-  const att = foto.fields.Attachments?.[0];
-  const fullImg = att?.url;
 
   const c = document.getElementById('preview-content');
   if (tipo === 'Video' && fileId) {
     c.innerHTML = `<iframe src="https://drive.google.com/file/d/${fileId}/preview?autoplay=1" allow="autoplay" allowfullscreen></iframe>`;
-  } else if (fullImg) {
-    c.innerHTML = `<img class="preview-media" src="${fullImg}" alt="${foto.fields.Nombre || ''}">`;
   } else if (fileId) {
-    c.innerHTML = `<img class="preview-media" src="https://lh3.googleusercontent.com/d/${fileId}=w1200" alt="${foto.fields.Nombre || ''}">`;
+    // Mostramos la versión recortada 4:5 (=w1080-h1350-c) que es exactamente
+    // lo que IG va a publicar. No la foto original sin crop — ese preview
+    // engañaba al usuario sobre el resultado final.
+    c.innerHTML = `<img class="preview-media" src="https://lh3.googleusercontent.com/d/${fileId}=w1080-h1350-c" alt="${foto.fields.Nombre || ''}">`;
   } else {
     c.innerHTML = `<div style="padding:40px;color:#fff">Vista previa no disponible</div>`;
   }
