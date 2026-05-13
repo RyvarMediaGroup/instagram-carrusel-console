@@ -415,6 +415,49 @@ async function loadPending() {
   }
 }
 
+// Re-randomiza Random Rank en TODAS las fotos activas, después abre Make
+// Scenario 1 en pestaña nueva para que el usuario dé Run once y obtenga
+// selección distinta. Sin este paso, el sort de Make devuelve siempre el
+// mismo orden hasta el próximo re-roll automático (cada 15 min vía Apps Script).
+async function regenerarCarrusel() {
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '🔀 Randomizando pool...';
+  try {
+    // 1. Listar todas las activas
+    const filter = `?filterByFormula=${encodeURIComponent("{Estado}='Activa'")}&pageSize=100`;
+    let all = [];
+    let offset = null;
+    do {
+      const url = `?filterByFormula=${encodeURIComponent("{Estado}='Activa'")}&pageSize=100${offset ? `&offset=${offset}` : ''}`;
+      const data = await airtable('GET', TABLE_FOTOS, url);
+      all = all.concat(data.records || []);
+      offset = data.offset;
+    } while (offset);
+
+    // 2. Patch en batches de 10
+    for (let i = 0; i < all.length; i += 10) {
+      const batch = all.slice(i, i + 10);
+      const records = batch.map(r => ({
+        id: r.id,
+        fields: { 'Random Rank': Math.floor(Math.random() * 1000000) }
+      }));
+      await airtable('PATCH', TABLE_FOTOS, '', { records });
+    }
+
+    toast(`Randomizado ${all.length} fotos. Abriendo Make...`, 'success');
+    setTimeout(() => {
+      window.open(`https://us2.make.com/${MAKE_TEAM_ID}/scenarios/${MAKE_SCENARIO_1}/edit`, '_blank');
+    }, 600);
+  } catch (e) {
+    toast('Error: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
+}
+
 async function loadFotos() {
   try {
     const filter = `?filterByFormula=${encodeURIComponent("{Estado}='Activa'")}&maxRecords=200`;
@@ -461,8 +504,9 @@ function renderPending() {
     c.innerHTML = `
       <div class="empty">
         <h3>No hay carrusel pendiente</h3>
-        <p>El escenario 1 corre automáticamente cada día. Si quieres uno ahora, abre Make.com y haz click en "Run once".</p>
-        <a class="btn btn-primary" href="https://us2.make.com/${MAKE_TEAM_ID}/scenarios/${MAKE_SCENARIO_1}/edit" target="_blank">⚡ Abrir Make.com (Run once)</a>
+        <p>El escenario 1 corre automáticamente cada día. Si quieres uno ahora con selección nueva, dale al botón de abajo: randomiza el pool y abre Make para que des Run once.</p>
+        <button class="btn btn-primary" onclick="regenerarCarrusel()">🔀 Re-randomizar + Abrir Make</button>
+        <a class="btn btn-ghost btn-sm" style="margin-top:12px;display:inline-flex" href="https://us2.make.com/${MAKE_TEAM_ID}/scenarios/${MAKE_SCENARIO_1}/edit" target="_blank">Abrir Make sin randomizar</a>
         <button class="btn btn-ghost btn-sm" style="margin-top:12px;display:block;margin-left:auto;margin-right:auto" onclick="loadPending()">🔄 Refrescar</button>
       </div>`;
     return;
