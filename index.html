@@ -459,10 +459,20 @@ async function regenerarCarrusel() {
 }
 
 async function loadFotos() {
+  // Airtable devuelve max 100 records por página. Sin paginación, fotos del
+  // pool con más de 100 records activas no se cargan y los slides cuyas
+  // Nombres apuntan a esas fotos no renderizan (parecen "faltantes" en consola).
   try {
-    const filter = `?filterByFormula=${encodeURIComponent("{Estado}='Activa'")}&maxRecords=200`;
-    const data = await airtable('GET', TABLE_FOTOS, filter);
-    state.fotos = data.records;
+    const formula = encodeURIComponent("{Estado}='Activa'");
+    let all = [];
+    let offset = '';
+    do {
+      const q = `?filterByFormula=${formula}&pageSize=100${offset ? `&offset=${offset}` : ''}`;
+      const data = await airtable('GET', TABLE_FOTOS, q);
+      all = all.concat(data.records || []);
+      offset = data.offset || '';
+    } while (offset);
+    state.fotos = all;
   } catch (e) { console.error(e); }
 }
 
