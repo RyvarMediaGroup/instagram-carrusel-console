@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ryvar ‚Äî Carrusel Instagram</title>
+<title>Ryvar — Carrusel Instagram</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <style>
@@ -31,7 +31,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(124,58,237,.4);border-radius:3px}
 
-/* ‚îÄ‚îÄ REUSABLE ‚îÄ‚îÄ */
+/* ── REUSABLE ── */
 .glass{background:var(--surface);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--r)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border:none;border-radius:var(--r-sm);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;text-decoration:none}
 .btn-primary{background:var(--grad);color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.35)}
@@ -54,7 +54,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 
 textarea{resize:vertical;min-height:140px;line-height:1.6}
 label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
 
-/* ‚îÄ‚îÄ LOGIN ‚îÄ‚îÄ */
+/* ── LOGIN ── */
 #login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100}
 #login.hidden{display:none}
 .login-card{width:380px;max-width:95vw;padding:44px 40px}
@@ -63,11 +63,11 @@ label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bot
 #login input{font-size:22px;text-align:center;letter-spacing:8px;padding:14px}
 #login-error{color:var(--red);font-size:12px;margin:12px 0;min-height:18px;text-align:center}
 
-/* ‚îÄ‚îÄ APP ‚îÄ‚îÄ */
+/* ── APP ── */
 #app{display:none;flex-direction:column;min-height:100vh}
 #app.visible{display:flex}
 
-/* ‚îÄ‚îÄ TOPBAR ‚îÄ‚îÄ */
+/* ── TOPBAR ── */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.5);backdrop-filter:blur(8px);position:sticky;top:0;z-index:10}
 .topbar-logo{font-size:18px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .topbar-tabs{display:flex;gap:4px}
@@ -75,7 +75,7 @@ label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bot
 .tab:hover{color:var(--text);background:var(--surface)}
 .tab.active{color:var(--text);background:var(--surface-2)}
 
-/* ‚îÄ‚îÄ MAIN ‚îÄ‚îÄ */
+/* ── MAIN ── */
 .main{flex:1;padding:32px;max-width:1200px;margin:0 auto;width:100%}
 .section{display:none}
 .section.active{display:block}
@@ -83,13 +83,13 @@ label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bot
 .empty h3{font-size:18px;margin-bottom:8px;color:var(--text)}
 .empty p{font-size:13px;max-width:400px;margin:0 auto 20px}
 
-/* ‚îÄ‚îÄ CARD ‚îÄ‚îÄ */
+/* ── CARD ── */
 .card{padding:24px;margin-bottom:20px}
 .card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:12px}
 .card-title{font-size:16px;font-weight:700}
 .card-meta{color:var(--muted);font-size:12px}
 
-/* ‚îÄ‚îÄ SLIDES GRID ‚îÄ‚îÄ */
+/* ── SLIDES GRID ── */
 .slides{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;margin-bottom:18px}
 .slide{position:relative;aspect-ratio:1;border-radius:var(--r-sm);overflow:hidden;background:var(--surface-2);border:1px solid var(--border);cursor:grab;transition:transform .15s}
 .slide:hover{transform:translateY(-2px);border-color:var(--accent)}
@@ -105,16 +105,16 @@ label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bot
 .slide-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;pointer-events:none;backdrop-filter:blur(4px);transition:all .15s}
 .slide:hover .slide-play{background:var(--accent);transform:translate(-50%,-50%) scale(1.15)}
 
-/* ‚îÄ‚îÄ PREVIEW MODAL ‚îÄ‚îÄ */
+/* ── PREVIEW MODAL ── */
 #preview-modal .modal-card{width:auto;max-width:90vw;max-height:90vh;padding:0;background:#000}
 #preview-modal .preview-media{display:block;max-width:90vw;max-height:80vh}
 #preview-modal iframe{width:80vw;height:80vh;border:none;background:#000;max-width:1000px;max-height:600px}
 .preview-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;border:none;cursor:pointer;font-size:18px;z-index:60}
 
-/* ‚îÄ‚îÄ ACTIONS ‚îÄ‚îÄ */
+/* ── ACTIONS ── */
 .actions{display:flex;gap:10px;flex-wrap:wrap;padding-top:18px;border-top:1px solid var(--border);margin-top:18px}
 
-/* ‚îÄ‚îÄ HISTORY ‚îÄ‚îÄ */
+/* ── HISTORY ── */
 .history-item{display:grid;grid-template-columns:auto 1fr auto;gap:18px;padding:18px;border-bottom:1px solid var(--border);align-items:center}
 .history-item:last-child{border-bottom:none}
 .history-date{font-size:12px;color:var(--muted);min-width:80px}
@@ -125,13 +125,13 @@ label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bot
 .state-publicado{background:rgba(34,197,94,.15);color:var(--green)}
 .state-rechazado{background:rgba(239,68,68,.15);color:var(--red)}
 
-/* ‚îÄ‚îÄ CONFIG ‚îÄ‚îÄ */
+/* ── CONFIG ── */
 .config-item{padding:18px;margin-bottom:14px}
 .config-item label{margin-bottom:8px}
 .config-key{font-family:'SF Mono',monospace;font-size:13px;color:var(--accent-l);font-weight:700;margin-bottom:4px}
 .config-desc{color:var(--muted);font-size:12px;margin-bottom:12px}
 
-/* ‚îÄ‚îÄ PICKER MODAL ‚îÄ‚îÄ */
+/* ── PICKER MODAL ── */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:50;display:none;align-items:center;justify-content:center;padding:32px}
 .modal.visible{display:flex}
 .modal-card{width:900px;max-width:100%;max-height:80vh;display:flex;flex-direction:column;padding:0}
@@ -145,18 +145,18 @@ label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bot
 .picker-info{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.9),transparent);color:#fff;padding:12px 8px 8px;font-size:11px}
 .picker-tipo{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.7);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;text-transform:uppercase}
 
-/* ‚îÄ‚îÄ TOAST ‚îÄ‚îÄ */
+/* ── TOAST ── */
 #toast{position:fixed;bottom:24px;right:24px;padding:14px 20px;border-radius:var(--r-sm);background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.4);transform:translateY(100px);transition:transform .25s;z-index:200;border-left:4px solid var(--accent)}
 #toast.show{transform:translateY(0)}
 #toast.success{border-color:var(--green)}
 #toast.error{border-color:var(--red)}
 
-/* ‚îÄ‚îÄ LOADER ‚îÄ‚îÄ */
+/* ── LOADER ── */
 .loader{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-screen{padding:80px;text-align:center;color:var(--muted)}
 
-/* ‚îÄ‚îÄ MOBILE ‚îÄ‚îÄ */
+/* ── MOBILE ── */
 @media (max-width: 640px) {
   body{font-size:14px}
   .topbar{padding:12px 14px;flex-wrap:wrap;gap:10px}
@@ -170,7 +170,7 @@ label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bot
   .slides{grid-template-columns:repeat(3,1fr);gap:8px}
   .slide-name{font-size:10px;padding:8px 5px 5px}
   .slide-num{top:4px;left:4px;padding:2px 6px;font-size:10px}
-  /* En m√≥vil el hover no aplica ‚Äî la X siempre visible */
+  /* En móvil el hover no aplica — la X siempre visible */
   .slide-x{opacity:1;width:22px;height:22px;font-size:13px;top:4px;right:4px}
   .actions{flex-direction:column;gap:8px}
   .actions .btn{width:100%;padding:14px 18px;font-size:14px}
@@ -198,10 +198,10 @@ label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bot
 <div id="setup" style="display:none;position:fixed;inset:0;background:var(--bg);align-items:center;justify-content:center;z-index:101;padding:20px">
   <div class="login-card glass" style="width:480px">
     <div class="login-logo">SETUP</div>
-    <div class="login-sub">Configuraci√≥n inicial ‚Äî solo se guarda en este navegador</div>
+    <div class="login-sub">Configuración inicial — solo se guarda en este navegador</div>
     <div class="field" style="margin-bottom:14px">
-      <label>PIN (4-6 d√≠gitos, lo eliges t√∫)</label>
-      <input type="password" id="setup-pin" placeholder="‚Ä¢‚Ä¢‚Ä¢‚Ä¢" maxlength="6">
+      <label>PIN (4-6 dígitos, lo eliges tú)</label>
+      <input type="password" id="setup-pin" placeholder="••••" maxlength="6">
     </div>
     <div class="field" style="margin-bottom:14px">
       <label>Airtable Personal Access Token</label>
@@ -225,7 +225,7 @@ label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bot
   <div class="login-card glass">
     <div class="login-logo">RYVAR</div>
     <div class="login-sub">Carrusel Instagram</div>
-    <input type="password" id="pin-input" placeholder="‚Ä¢‚Ä¢‚Ä¢‚Ä¢" maxlength="6" autocomplete="off">
+    <input type="password" id="pin-input" placeholder="••••" maxlength="6" autocomplete="off">
     <div id="login-error"></div>
     <button class="btn btn-primary" style="width:100%" onclick="checkPin()">Entrar</button>
     <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px" onclick="resetSetup()">Re-configurar</button>
@@ -235,13 +235,13 @@ label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bot
 <!-- APP -->
 <div id="app">
   <div class="topbar">
-    <div class="topbar-logo">RYVAR ¬∑ Carrusel</div>
+    <div class="topbar-logo">RYVAR · Carrusel</div>
     <div class="topbar-tabs">
-      <button class="tab active" data-section="pending" onclick="showSection('pending')">üìã Pendiente</button>
-      <button class="tab" data-section="history" onclick="showSection('history')">üìú Historial</button>
-      <button class="tab" data-section="config" onclick="showSection('config')">‚öôÔ∏è Config</button>
+      <button class="tab active" data-section="pending" onclick="showSection('pending')">📋 Pendiente</button>
+      <button class="tab" data-section="history" onclick="showSection('history')">📜 Historial</button>
+      <button class="tab" data-section="config" onclick="showSection('config')">⚙️ Config</button>
     </div>
-    <button class="btn btn-icon" onclick="logout()" title="Salir">‚èª</button>
+    <button class="btn btn-icon" onclick="logout()" title="Salir">⏻</button>
   </div>
 
   <div class="main">
@@ -264,7 +264,7 @@ label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bot
 
 <!-- PREVIEW MODAL (image/video) -->
 <div class="modal" id="preview-modal" onclick="if(event.target.id==='preview-modal')closePreview()">
-  <button class="preview-close" onclick="closePreview()">‚úï</button>
+  <button class="preview-close" onclick="closePreview()">✕</button>
   <div class="modal-card glass" id="preview-content"></div>
 </div>
 
@@ -272,8 +272,8 @@ label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bot
 <div class="modal" id="picker-modal">
   <div class="modal-card glass">
     <div class="modal-head">
-      <div class="card-title">A√±adir foto/video al carrusel</div>
-      <button class="btn btn-icon" onclick="closePicker()">‚úï</button>
+      <div class="card-title">Añadir foto/video al carrusel</div>
+      <button class="btn btn-icon" onclick="closePicker()">✕</button>
     </div>
     <div class="modal-body">
       <div id="picker-content"><div class="loading-screen"><span class="loader"></span></div></div>
@@ -293,7 +293,7 @@ const TABLE_CONFIG = 'tblyMDYpvhlIhyLWp';
 const MAKE_SCENARIO_1 = 4939714;
 const MAKE_TEAM_ID = 2236659;
 
-// Secrets ‚Äî stored in localStorage on first visit, never in this file
+// Secrets — stored in localStorage on first visit, never in this file
 const PIN = localStorage.getItem('ryvar_pin') || '';
 const AIRTABLE_TOKEN = localStorage.getItem('ryvar_airtable_token') || '';
 const WEBHOOK_URL = localStorage.getItem('ryvar_webhook_url') || '';
@@ -334,9 +334,9 @@ function saveSetup() {
   const wh = document.getElementById('setup-webhook').value.trim();
   const mk = document.getElementById('setup-make').value.trim();
   const err = document.getElementById('setup-error');
-  if (!pin || pin.length < 4) { err.textContent = 'PIN inv√°lido'; return; }
-  if (!at.startsWith('pat')) { err.textContent = 'Airtable token inv√°lido (debe empezar con "pat")'; return; }
-  if (!wh.startsWith('https://hook.')) { err.textContent = 'Webhook URL inv√°lida'; return; }
+  if (!pin || pin.length < 4) { err.textContent = 'PIN inválido'; return; }
+  if (!at.startsWith('pat')) { err.textContent = 'Airtable token inválido (debe empezar con "pat")'; return; }
+  if (!wh.startsWith('https://hook.')) { err.textContent = 'Webhook URL inválida'; return; }
   localStorage.setItem('ryvar_pin', pin);
   localStorage.setItem('ryvar_airtable_token', at);
   localStorage.setItem('ryvar_webhook_url', wh);
@@ -345,7 +345,7 @@ function saveSetup() {
 }
 
 function resetSetup() {
-  if (!confirm('¬øBorrar configuraci√≥n y volver a configurar?')) return;
+  if (!confirm('¿Borrar configuración y volver a configurar?')) return;
   localStorage.clear();
   sessionStorage.clear();
   location.reload();
@@ -387,8 +387,8 @@ if (needsSetup()) {
 // ========== INIT ==========
 async function init() {
   // Cargar fotos PRIMERO. renderPending() depende de state.fotos para
-  // resolver Orden Slides (Nombres) ‚Üí record IDs. Si corren en paralelo,
-  // pending puede terminar antes y los slides salen vac√≠os.
+  // resolver Orden Slides (Nombres) → record IDs. Si corren en paralelo,
+  // pending puede terminar antes y los slides salen vacíos.
   await loadFotos();
   await loadPending();
 }
@@ -406,7 +406,7 @@ function showSection(name) {
 // ========== PENDING ==========
 async function loadPending() {
   try {
-    const filter = `?filterByFormula=${encodeURIComponent("OR({Estado}='Borrador',{Estado}='Pendiente Aprobaci√≥n')")}&maxRecords=1`;
+    const filter = `?filterByFormula=${encodeURIComponent("OR({Estado}='Borrador',{Estado}='Pendiente Aprobación')")}&maxRecords=1`;
     const data = await airtable('GET', TABLE_POSTS, filter);
     state.pendingPost = data.records[0] || null;
     renderPending();
@@ -415,15 +415,15 @@ async function loadPending() {
   }
 }
 
-// Re-randomiza Random Rank en TODAS las fotos activas, despu√©s abre Make
-// Scenario 1 en pesta√±a nueva para que el usuario d√© Run once y obtenga
-// selecci√≥n distinta. Sin este paso, el sort de Make devuelve siempre el
-// mismo orden hasta el pr√≥ximo re-roll autom√°tico (cada 15 min v√≠a Apps Script).
+// Re-randomiza Random Rank en TODAS las fotos activas, después abre Make
+// Scenario 1 en pestaña nueva para que el usuario dé Run once y obtenga
+// selección distinta. Sin este paso, el sort de Make devuelve siempre el
+// mismo orden hasta el próximo re-roll automático (cada 15 min vía Apps Script).
 async function regenerarCarrusel() {
   const btn = event.target;
   const originalText = btn.innerHTML;
   btn.disabled = true;
-  btn.innerHTML = 'üîÄ Randomizando pool...';
+  btn.innerHTML = '🔀 Randomizando pool...';
   try {
     // 1. Listar todas las activas
     const filter = `?filterByFormula=${encodeURIComponent("{Estado}='Activa'")}&pageSize=100`;
@@ -471,7 +471,7 @@ function fotoById(id) {
 }
 
 function fotoByNombre(nombre) {
-  // Prefiere el record con URL Publica si hay duplicados (hu√©rfanos sin catbox URL)
+  // Prefiere el record con URL Publica si hay duplicados (huérfanos sin catbox URL)
   const matches = state.fotos.filter(f => f.fields.Nombre === nombre);
   return matches.find(f => f.fields['URL Publica']) || matches[0] || null;
 }
@@ -483,7 +483,7 @@ function getThumbUrl(foto) {
     const m = driveUrl.match(/\/file\/d\/([^/]+)/) || driveUrl.match(/[?&]id=([^&]+)/);
     if (m) {
       // Videos: lh3 con =w-h-c no genera buen thumbnail para video file IDs.
-      // Usamos drive.google.com/thumbnail que s√≠ extrae frame del video.
+      // Usamos drive.google.com/thumbnail que sí extrae frame del video.
       if (tipo === 'Video') {
         return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w400`;
       }
@@ -504,10 +504,10 @@ function renderPending() {
     c.innerHTML = `
       <div class="empty">
         <h3>No hay carrusel pendiente</h3>
-        <p>El escenario 1 corre autom√°ticamente cada d√≠a. Si quieres uno ahora con selecci√≥n nueva, dale al bot√≥n de abajo: randomiza el pool y abre Make para que des Run once.</p>
-        <button class="btn btn-primary" onclick="regenerarCarrusel()">üîÄ Re-randomizar + Abrir Make</button>
+        <p>El escenario 1 corre automáticamente cada día. Si quieres uno ahora con selección nueva, dale al botón de abajo: randomiza el pool y abre Make para que des Run once.</p>
+        <button class="btn btn-primary" onclick="regenerarCarrusel()">🔀 Re-randomizar + Abrir Make</button>
         <a class="btn btn-ghost btn-sm" style="margin-top:12px;display:inline-flex" href="https://us2.make.com/${MAKE_TEAM_ID}/scenarios/${MAKE_SCENARIO_1}/edit" target="_blank">Abrir Make sin randomizar</a>
-        <button class="btn btn-ghost btn-sm" style="margin-top:12px;display:block;margin-left:auto;margin-right:auto" onclick="loadPending()">üîÑ Refrescar</button>
+        <button class="btn btn-ghost btn-sm" style="margin-top:12px;display:block;margin-left:auto;margin-right:auto" onclick="loadPending()">🔄 Refrescar</button>
       </div>`;
     return;
   }
@@ -516,7 +516,7 @@ function renderPending() {
   const fields = post.fields;
   // Source of truth: Orden Slides (Nombres separados por " | ").
   // Fotos IDs ya no es confiable porque Make's IML no soporta map(array; 'id').
-  // Resolvemos cada Nombre a record ID ac√°.
+  // Resolvemos cada Nombre a record ID acá.
   const ordenNombres = (fields['Orden Slides'] || '').split(/\s*\|\s*/).map(s => s.trim()).filter(Boolean);
   const fotoIds = ordenNombres.map(n => fotoByNombre(n)?.id).filter(Boolean);
 
@@ -524,8 +524,8 @@ function renderPending() {
     <div class="card glass">
       <div class="card-head">
         <div>
-          <div class="card-title">${fields['T√≠tulo'] || 'Sin t√≠tulo'}</div>
-          <div class="card-meta">${fotoIds.length} slides ¬∑ Estado: ${fields['Estado']}</div>
+          <div class="card-title">${fields['Título'] || 'Sin título'}</div>
+          <div class="card-meta">${fotoIds.length} slides · Estado: ${fields['Estado']}</div>
         </div>
         <span class="history-state state-${(fields['Estado'] || '').toLowerCase().replace(/\s/g, '')}">${fields['Estado']}</span>
       </div>
@@ -533,8 +533,8 @@ function renderPending() {
       <label>Caption</label>
       <textarea id="caption-edit" oninput="captionDirty=true">${fields['Caption'] || ''}</textarea>
       <div style="display:flex;gap:10px;margin-top:8px">
-        <button class="btn btn-ghost btn-sm" onclick="saveCaption()">üíæ Guardar caption editado</button>
-        <button class="btn btn-blue btn-sm" onclick="action('regenerate_caption')">üîÑ Regenerar con Claude</button>
+        <button class="btn btn-ghost btn-sm" onclick="saveCaption()">💾 Guardar caption editado</button>
+        <button class="btn btn-blue btn-sm" onclick="action('regenerate_caption')">🔄 Regenerar con Claude</button>
       </div>
 
       <h3 style="margin:24px 0 12px;font-size:14px;font-weight:700">Slides del carrusel</h3>
@@ -544,8 +544,8 @@ function renderPending() {
       </div>
 
       <div class="actions">
-        <button class="btn btn-green" onclick="action('approve')">‚úÖ Aprobar y publicar</button>
-        <button class="btn btn-red" onclick="action('reject')">‚ùå Rechazar</button>
+        <button class="btn btn-green" onclick="action('approve')">✅ Aprobar y publicar</button>
+        <button class="btn btn-red" onclick="action('reject')">❌ Rechazar</button>
       </div>
     </div>`;
 
@@ -563,18 +563,18 @@ function renderSlide(fotoId, idx) {
   if (!foto) {
     return `<div class="slide" data-id="${fotoId}">
       <span class="slide-num">${idx + 1}</span>
-      <button class="slide-x" onclick="removeSlide('${fotoId}')">√ó</button>
+      <button class="slide-x" onclick="removeSlide('${fotoId}')">×</button>
       <div class="slide-placeholder">?</div>
-      <div class="slide-name">‚ö†Ô∏è Foto no encontrada</div>
+      <div class="slide-name">⚠️ Foto no encontrada</div>
     </div>`;
   }
   const thumb = getThumbUrl(foto);
   const tipo = foto.fields.Tipo || 'Foto';
   return `<div class="slide" data-id="${fotoId}" onclick="if(!event.target.classList.contains('slide-x'))openPreview('${fotoId}')">
     <span class="slide-num">${idx + 1}</span>
-    <button class="slide-x" onclick="event.stopPropagation();removeSlide('${fotoId}')">√ó</button>
-    ${thumb ? `<img class="slide-img" src="${thumb}" alt="${foto.fields.Nombre || ''}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="slide-placeholder" style="display:none">${tipo === 'Video' ? 'üé¨' : 'üñºÔ∏è'}</div>` : `<div class="slide-placeholder">${tipo === 'Video' ? 'üé¨' : 'üñºÔ∏è'}</div>`}
-    ${tipo === 'Video' ? `<div class="slide-play">‚ñ∂</div>` : ''}
+    <button class="slide-x" onclick="event.stopPropagation();removeSlide('${fotoId}')">×</button>
+    ${thumb ? `<img class="slide-img" src="${thumb}" alt="${foto.fields.Nombre || ''}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="slide-placeholder" style="display:none">${tipo === 'Video' ? '🎬' : '🖼️'}</div>` : `<div class="slide-placeholder">${tipo === 'Video' ? '🎬' : '🖼️'}</div>`}
+    ${tipo === 'Video' ? `<div class="slide-play">▶</div>` : ''}
     <div class="slide-name">${foto.fields.Nombre || ''}</div>
   </div>`;
 }
@@ -586,7 +586,7 @@ async function saveSlideOrder() {
 }
 
 async function removeSlide(fotoId) {
-  if (!confirm('¬øQuitar esta foto del carrusel?')) return;
+  if (!confirm('¿Quitar esta foto del carrusel?')) return;
   const ids = [...document.querySelectorAll('#slides-grid .slide')].map(s => s.dataset.id).filter(id => id !== fotoId);
   await updatePostFotos(ids);
   await loadPending();
@@ -631,9 +631,9 @@ function openPreview(fotoId) {
   if (tipo === 'Video' && fileId) {
     c.innerHTML = `<iframe src="https://drive.google.com/file/d/${fileId}/preview?autoplay=1" allow="autoplay" allowfullscreen></iframe>`;
   } else if (fileId) {
-    // Mostramos la versi√≥n recortada 4:5 (=w1080-h1350-c) que es exactamente
-    // lo que IG va a publicar. No la foto original sin crop ‚Äî ese preview
-    // enga√±aba al usuario sobre el resultado final.
+    // Mostramos la versión recortada 4:5 (=w1080-h1350-c) que es exactamente
+    // lo que IG va a publicar. No la foto original sin crop — ese preview
+    // engañaba al usuario sobre el resultado final.
     c.innerHTML = `<img class="preview-media" src="https://lh3.googleusercontent.com/d/${fileId}=w1080-h1350-c" alt="${foto.fields.Nombre || ''}">`;
   } else {
     c.innerHTML = `<div style="padding:40px;color:#fff">Vista previa no disponible</div>`;
@@ -653,15 +653,15 @@ function openPicker() {
   const available = state.fotos.filter(f => !currentIds.includes(f.id));
 
   if (available.length === 0) {
-    c.innerHTML = `<div class="empty"><h3>Sin fotos disponibles</h3><p>Todas las fotos del pool ya est√°n en el carrusel.</p></div>`;
+    c.innerHTML = `<div class="empty"><h3>Sin fotos disponibles</h3><p>Todas las fotos del pool ya están en el carrusel.</p></div>`;
   } else {
     c.innerHTML = `<div class="picker-grid">${available.map(f => {
       const thumb = getThumbUrl(f);
       const tipo = f.fields.Tipo || 'Foto';
       return `<div class="picker-item" onclick="addSlide('${f.id}')">
         <span class="picker-tipo">${tipo}</span>
-        ${thumb ? `<img class="picker-img" src="${thumb}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="slide-placeholder" style="display:none">${tipo === 'Video' ? 'üé¨' : 'üñºÔ∏è'}</div>` : `<div class="slide-placeholder">${tipo === 'Video' ? 'üé¨' : 'üñºÔ∏è'}</div>`}
-        ${tipo === 'Video' ? `<div class="slide-play">‚ñ∂</div>` : ''}
+        ${thumb ? `<img class="picker-img" src="${thumb}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="slide-placeholder" style="display:none">${tipo === 'Video' ? '🎬' : '🖼️'}</div>` : `<div class="slide-placeholder">${tipo === 'Video' ? '🎬' : '🖼️'}</div>`}
+        ${tipo === 'Video' ? `<div class="slide-play">▶</div>` : ''}
         <div class="picker-info">${f.fields.Nombre || ''}</div>
       </div>`;
     }).join('')}</div>`;
@@ -677,15 +677,15 @@ async function addSlide(fotoId) {
   await updatePostFotos(ids);
   closePicker();
   await loadPending();
-  toast('Foto a√±adida', 'success');
+  toast('Foto añadida', 'success');
 }
 
 // ========== ACTIONS (webhook) ==========
 async function action(act) {
   const messages = {
-    approve: '¬øAprobar este carrusel para publicar?',
-    regenerate_caption: '¬øRegenerar el caption con Claude (mismas fotos)?',
-    reject: '¬øRechazar y eliminar este borrador?'
+    approve: '¿Aprobar este carrusel para publicar?',
+    regenerate_caption: '¿Regenerar el caption con Claude (mismas fotos)?',
+    reject: '¿Rechazar y eliminar este borrador?'
   };
   if (!confirm(messages[act])) return;
 
@@ -695,7 +695,7 @@ async function action(act) {
     await fetch(url, { mode: 'no-cors' });  // no-cors because Make.com
     setTimeout(async () => {
       await loadPending();
-      toast(act === 'approve' ? '‚úÖ Aprobado' : act === 'reject' ? '‚ùå Rechazado' : 'üîÑ Caption regenerado', 'success');
+      toast(act === 'approve' ? '✅ Aprobado' : act === 'reject' ? '❌ Rechazado' : '🔄 Caption regenerado', 'success');
     }, 2500);
   } catch (e) {
     toast('Error: ' + e.message, 'error');
@@ -707,15 +707,15 @@ async function triggerNew() {
   toast('Disparando escenario 1... espera ~30 segundos', '');
   try {
     await fetch(`${WEBHOOK_URL}?action=trigger_new`, { method: 'GET', mode: 'no-cors' });
-    // Poll for the new pending post ‚Äî escenario 1 toma ~25s en correr completo
+    // Poll for the new pending post — escenario 1 toma ~25s en correr completo
     let attempts = 0;
     const poll = setInterval(async () => {
       attempts++;
       await loadPending();
       if (state.pendingPost || attempts >= 12) {
         clearInterval(poll);
-        if (state.pendingPost) toast('‚úì Carrusel generado', 'success');
-        else toast('Tard√≥ m√°s de 60s. Refresca manualmente.', 'error');
+        if (state.pendingPost) toast('✓ Carrusel generado', 'success');
+        else toast('Tardó más de 60s. Refresca manualmente.', 'error');
       }
     }, 5000);
   } catch (e) {
@@ -728,18 +728,18 @@ async function loadHistory() {
   const c = document.getElementById('history-content');
   c.innerHTML = '<div class="loading-screen"><span class="loader"></span></div>';
   try {
-    const filter = `?filterByFormula=${encodeURIComponent("OR({Estado}='Aprobado',{Estado}='Publicado',{Estado}='Rechazado')")}&maxRecords=50&sort%5B0%5D%5Bfield%5D=T√≠tulo&sort%5B0%5D%5Bdirection%5D=desc`;
+    const filter = `?filterByFormula=${encodeURIComponent("OR({Estado}='Aprobado',{Estado}='Publicado',{Estado}='Rechazado')")}&maxRecords=50&sort%5B0%5D%5Bfield%5D=Título&sort%5B0%5D%5Bdirection%5D=desc`;
     const data = await airtable('GET', TABLE_POSTS, filter);
     state.history = data.records;
     if (data.records.length === 0) {
-      c.innerHTML = `<div class="empty"><h3>A√∫n no hay historial</h3><p>Los carruseles aprobados, publicados o rechazados aparecer√°n aqu√≠.</p></div>`;
+      c.innerHTML = `<div class="empty"><h3>Aún no hay historial</h3><p>Los carruseles aprobados, publicados o rechazados aparecerán aquí.</p></div>`;
       return;
     }
     c.innerHTML = `<div class="card glass" style="padding:0">${data.records.map(r => {
       const f = r.fields;
       const stateClass = (f['Estado'] || '').toLowerCase().replace(/\s/g, '');
       return `<div class="history-item">
-        <div class="history-date">${f['T√≠tulo'] || ''}</div>
+        <div class="history-date">${f['Título'] || ''}</div>
         <div class="history-caption">${(f['Caption'] || '').substring(0, 200)}</div>
         <span class="history-state state-${stateClass}">${f['Estado']}</span>
       </div>`;
@@ -757,16 +757,16 @@ async function loadConfig() {
     const data = await airtable('GET', TABLE_CONFIG, '?maxRecords=50');
     state.config = data.records;
     if (data.records.length === 0) {
-      c.innerHTML = `<div class="empty"><h3>CONFIG vac√≠o</h3><p>Agrega rows desde Airtable.</p></div>`;
+      c.innerHTML = `<div class="empty"><h3>CONFIG vacío</h3><p>Agrega rows desde Airtable.</p></div>`;
       return;
     }
     c.innerHTML = data.records.map(r => {
       const f = r.fields;
       return `<div class="card glass config-item">
         <div class="config-key">${f['Clave']}</div>
-        <div class="config-desc">${f['Descripci√≥n'] || ''}</div>
+        <div class="config-desc">${f['Descripción'] || ''}</div>
         <textarea id="cfg-${r.id}" rows="6">${f['Valor'] || ''}</textarea>
-        <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="saveConfig('${r.id}')">üíæ Guardar</button>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="saveConfig('${r.id}')">💾 Guardar</button>
       </div>`;
     }).join('');
   } catch (e) {
